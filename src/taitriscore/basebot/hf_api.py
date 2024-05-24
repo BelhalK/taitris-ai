@@ -93,7 +93,7 @@ class CostHandler(metaclass=Singleton):
         )
 
 
-class LLAMAV2API(BaseGPTAPI, RequestRateLimiter):
+class LLAMAAPI(BaseGPTAPI, RequestRateLimiter):
     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
             CONFIG.llama_model_name, use_auth_token=CONFIG.HUGGINGFACE_API_KEY
