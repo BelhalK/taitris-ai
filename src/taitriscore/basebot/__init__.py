@@ -1,2 +1,2 @@
-# from taitriscore.basebot.hf_api import LLAMAV2API
-from taitriscore.basebot.openai_api import OpenAIGPTAPI
+# from taitriscore.basebot.hf_api import LLAMAAPI
+from taitriscore.basebot.openai_api import OpenAIAPI

@@ -35,16 +35,55 @@ def retry(max_retries):
     return decorator
 
 
-class RateLimiter:
+class RequestRequestRateLimiter:
+    """
+    A class to enforce rate limits on API requests.
+
+    Attributes:
+        rpm (int): The number of requests allowed per minute.
+        last_call_time (float): The time when the last request was made.
+        interval (float): The minimum interval between requests in seconds.
+
+    Methods:
+        split_batches(batch):
+            Splits a batch of requests into smaller batches according to the rate limit.
+        wait_if_needed(num_requests):
+            Waits if necessary to ensure the rate limit is not exceeded.
+    """
+
     def __init__(self, rpm):
+        """
+        Initializes the RequestRequestRateLimiter with the specified requests per minute (rpm).
+
+        Args:
+            rpm (int): The number of requests allowed per minute.
+        """
         self.last_call_time = 0
         self.interval = 1.1 * 60 / rpm
         self.rpm = rpm
 
     def split_batches(self, batch):
+        """
+        Splits a batch of requests into smaller batches according to the rate limit.
+
+        Args:
+            batch (list): The list of requests to be split into batches.
+
+        Returns:
+            list: A list of smaller batches of requests.
+        """
         return [batch[i : i + self.rpm] for i in range(0, len(batch), self.rpm)]
 
     async def wait_if_needed(self, num_requests):
+        """
+        Waits if necessary to ensure the rate limit is not exceeded.
+
+        Args:
+            num_requests (int): The number of requests to be made.
+
+        Logs:
+            Info: Logs the remaining time to sleep if rate limit is exceeded.
+        """
         current_time = time.time()
         elapsed_time = current_time - self.last_call_time
 
@@ -63,7 +102,7 @@ class Costs(NamedTuple):
     total_budget: float
 
 
-class CostManager(metaclass=Singleton):
+class CostHandler(metaclass=Singleton):
     def __init__(self):
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
@@ -102,13 +141,13 @@ class CostManager(metaclass=Singleton):
         )
 
 
-class OpenAIGPTAPI(BaseGPTAPI, RateLimiter):
+class OpenAIAPI(BaseGPTAPI, RequestRequestRateLimiter):
     def __init__(self):
         self.__init_openai(CONFIG)
         self.llm = openai
         self.model = CONFIG.openai_model
-        self._cost_manager = CostManager()
-        RateLimiter.__init__(self, rpm=self.rpm)
+        self._cost_manager = CostHandler()
+        RequestRequestRateLimiter.__init__(self, rpm=self.rpm)
         super().__init__()
 
     def __init_openai(self, config):
@@ -142,25 +181,23 @@ class OpenAIGPTAPI(BaseGPTAPI, RateLimiter):
         # res = self.llm.ChatCompletion.create(**tmp_input)
 
         # res = self.llm.ChatCompletion.create(**self._cons_kwargs(messages))
-        
-        res = {"choices": [
-                    {
+
+        res = {
+            "choices": [
+                {
                     "index": 0,
-                    "message": {
-                        "role": "assistant",
-                        "content": "all good."
-                    },
-                    "logprobs": 'null',
-                    "finish_reason": "stop"
-                    }
-                ],
-                "usage": {
-                    "prompt_tokens": 102,
-                    "completion_tokens": 389,
-                    "total_tokens": 491
-                },
-                "system_fingerprint": 'null'
+                    "message": {"role": "assistant", "content": "all good."},
+                    "logprobs": "null",
+                    "finish_reason": "stop",
                 }
+            ],
+            "usage": {
+                "prompt_tokens": 102,
+                "completion_tokens": 389,
+                "total_tokens": 491,
+            },
+            "system_fingerprint": "null",
+        }
         return res
 
     def ask(self, prompt="Can you tell me what you know about Influencers Marketing?"):
