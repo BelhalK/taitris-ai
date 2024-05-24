@@ -73,6 +73,7 @@ class Config(metaclass=Singleton):
     def load_settings(self):
         # Load and set all config values
         self.max_tokens_rsp = self._get("MAX_TOKENS", 2048)
+        self.platform = self._get("PLATFORM")
         self.anthropic_api_key = self._get("ANTHROPIC_API_KEY")
         self.anthropic_api_base = self._get("ANTHROPIC_API_BASE")
         self.anthropic_model = self._get("ANTHROPIC_MODEL")

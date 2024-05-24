@@ -1,9 +1,13 @@
-# from taitriscore.basebot.anthropic_api import AnthropicAPI as LLM
-# from taitriscore.basebot.hf_api import LLAMAV2API as LLM
-from taitriscore.basebot.openai_api import OpenAIGPTAPI as LLM
+from taitriscore.config import CONFIG
+
+if CONFIG.platform == 'OPENAI':
+    from taitriscore.basebot.openai_api import OpenAIAPI as LLM
+elif CONFIG.platform == 'LLAMAV2':
+    from taitriscore.basebot.hf_api import LLAMAV2API as LLM
+elif CONFIG.platform == 'ANTHROPIC':
+    from taitriscore.basebot.anthropic_api import AnthropicAPI as LLM
+else:
+    raise ValueError(f"Unsupported platform type: {CONFIG.platform}")
+
 
 DEFAULT_LLM = LLM()
-
-
-async def ai_func(prompt):
-    return await DEFAULT_LLM.aask(prompt)

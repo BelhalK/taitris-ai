@@ -35,7 +35,7 @@ def retry(max_retries):
     return decorator
 
 
-class RateLimiter:
+class RequestRateLimiter:
     def __init__(self, rpm):
         self.last_call_time = 0
         self.interval = 1.1 * 60 / rpm
@@ -63,7 +63,7 @@ class Costs(NamedTuple):
     total_budget: float
 
 
-class CostManager(metaclass=Singleton):
+class CostHandler(metaclass=Singleton):
     def __init__(self):
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
@@ -102,7 +102,7 @@ class CostManager(metaclass=Singleton):
         )
 
 
-class AnthropicAPI(BaseGPTAPI, RateLimiter):
+class AnthropicAPI(BaseGPTAPI, RequestRateLimiter):
     def __init__(self, config: LLMConfig):
         self.config = config
         self.__init_anthropic()

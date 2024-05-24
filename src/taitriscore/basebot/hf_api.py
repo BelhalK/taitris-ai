@@ -26,7 +26,7 @@ from taitriscore.utils.token_counter import (
 )
 
 
-class RateLimiter:
+class RequestRateLimiter:
     def __init__(self, rpm):
         self.last_call_time = 0
         self.interval = 1.1 * 60 / rpm
@@ -54,7 +54,7 @@ class Costs(NamedTuple):
     total_budget: float
 
 
-class CostManager(metaclass=Singleton):
+class CostHandler(metaclass=Singleton):
     def __init__(self):
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
@@ -93,7 +93,7 @@ class CostManager(metaclass=Singleton):
         )
 
 
-class LLAMAV2API(BaseGPTAPI, RateLimiter):
+class LLAMAV2API(BaseGPTAPI, RequestRateLimiter):
     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
             CONFIG.llama_model_name, use_auth_token=CONFIG.HUGGINGFACE_API_KEY
@@ -141,9 +141,9 @@ class LLAMAV2API(BaseGPTAPI, RateLimiter):
             no_repeat_ngram_size=2,
         )
         self.llm = HuggingFacePipeline(pipeline=self.pipe)
-        self._cost_manager = CostManager()
+        self._cost_manager = CostHandler()
         self.rpm = CONFIG.rpm
-        RateLimiter.__init__(self, rpm=self.rpm)
+        RequestRateLimiter.__init__(self, rpm=self.rpm)
         super().__init__()
 
     def _calc_usage(self, messages, rsp):
