@@ -78,6 +78,7 @@ class Config(metaclass=Singleton):
         self.anthropic_api_base = self._get("ANTHROPIC_API_BASE")
         self.anthropic_model = self._get("ANTHROPIC_MODEL")
         self.serpapi_api_key = self._get("SERPAPI_API_KEY")
+        self.serper_api_key = self._get("SERPER_API_KEY")
         self.openai_api_key = self._get("OPENAI_API_KEY")
         self.openai_api_base = self._get("OPENAI_API_BASE")
         self.openai_model = self._get("OPENAI_MODEL")
