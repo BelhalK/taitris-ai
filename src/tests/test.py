@@ -12,6 +12,8 @@ from taitriscore.logs import logger
 from taitriscore.memory.memory import Memory
 from taitriscore.roles import Planner
 
+from taitriscore.roles import Planner
+
 
 async def create_plan(objective: str):
     role = Planner(profile="Planner", objective=objective)
