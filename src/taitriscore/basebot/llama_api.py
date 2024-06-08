@@ -9,21 +9,14 @@ import torch
 import transformers
 from langchain.llms import HuggingFacePipeline
 from torch import bfloat16, cuda
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    pipeline,
-)
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          BitsAndBytesConfig, pipeline)
 
 from taitriscore.basebot.base_gpt_api import BaseGPTAPI
 from taitriscore.config import CONFIG, Singleton
 from taitriscore.logs import logger
-from taitriscore.utils.token_counter import (
-    TOKEN_COSTS,
-    count_message_tokens,
-    count_string_tokens,
-)
+from taitriscore.utils.token_counter import (TOKEN_COSTS, count_message_tokens,
+                                             count_string_tokens)
 
 
 class RequestRateLimiter:
@@ -33,6 +26,15 @@ class RequestRateLimiter:
         self.rpm = rpm
 
     def split_batches(self, batch):
+        """
+        Splits a batch of requests into smaller batches according to the rate limit.
+
+        Args:
+            batch (list): The list of requests to be split into batches.
+
+        Returns:
+            list: A list of smaller batches of requests.
+        """
         return [batch[i : i + self.rpm] for i in range(0, len(batch), self.rpm)]
 
     async def wait_if_needed(self, num_requests):

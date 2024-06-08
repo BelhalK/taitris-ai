@@ -2,17 +2,19 @@ import abc
 import os
 import pdb
 import re
-import yaml
-from dotenv import load_dotenv
 from pathlib import Path
 
-from taitriscore.const import PROJECT_ROOT, ENV_ROOT
+import yaml
+from dotenv import load_dotenv
+
+from taitriscore.const import ENV_ROOT, PROJECT_ROOT
 from taitriscore.logs import logger
 from taitriscore.tools import SearchEngineType, WebBrowserEngineType
 
 # Load .env file
 dotenv_path = ENV_ROOT / ".env"
 load_dotenv(dotenv_path=dotenv_path)
+
 
 class Singleton(abc.ABCMeta, type):
     _instances = {}
@@ -22,10 +24,12 @@ class Singleton(abc.ABCMeta, type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+
 class NotConfiguredException(Exception):
     def __init__(self, message="The required configuration is not set"):
         self.message = message
         super().__init__(self.message)
+
 
 class Config(metaclass=Singleton):
     _instance = None
@@ -54,10 +58,12 @@ class Config(metaclass=Singleton):
                 configs.update(yaml_data)
 
     def _process_yaml_env(self, yaml_data):
-        pattern = re.compile(r'\$\{([^}]+)\}')
+        pattern = re.compile(r"\$\{([^}]+)\}")
         for key, value in yaml_data.items():
             if isinstance(value, str):
-                yaml_data[key] = pattern.sub(lambda x: os.environ.get(x.group(1), ''), value)
+                yaml_data[key] = pattern.sub(
+                    lambda x: os.environ.get(x.group(1), ""), value
+                )
 
     def _get(self, key, default=None):
         return self._configs.get(key, default)
@@ -102,5 +108,6 @@ class Config(metaclass=Singleton):
         self.rpm = self._get("RPM", 10)
         self.model_for_researcher_summary = self._get("MODEL_FOR_RESEARCHER_SUMMARY")
         self.model_for_researcher_report = self._get("MODEL_FOR_RESEARCHER_REPORT")
+
 
 CONFIG = Config()
