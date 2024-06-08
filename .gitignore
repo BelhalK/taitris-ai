@@ -14,7 +14,7 @@ __pycache__/
 
 # docstrings
 logs/
-# tests/
+tests/
 
 # app
 node_modules/
