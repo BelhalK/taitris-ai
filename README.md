@@ -1,7 +1,7 @@
 [![X (formerly Twitter)](https://img.shields.io/twitter/follow/BelhalK?style=social)](https://twitter.com/BelhalK)
 [![GitHub](https://img.shields.io/github/followers/BelhalK?label=Follow&style=social)](https://github.com/BelhalK)
 
-# Taitris: Revolutionizing Influencer Marketing Automation
+# Taitris: Influencer Marketing Campaign Automation
 
 Taitris is a fully automated and agentic framework specifically designed to streamline and enhance your influencer marketing campaigns. It utilizes state-of-the-art language models including OpenAI's GPT-3.5 Turbo, GPT-4, and a suite of open-source models such as Meta's LLaMA-3-8b-chat-hf, providing unparalleled capabilities in generating, managing, and optimizing influencer engagements.
 

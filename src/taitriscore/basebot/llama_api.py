@@ -9,30 +9,32 @@ import torch
 import transformers
 from langchain.llms import HuggingFacePipeline
 from torch import bfloat16, cuda
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    pipeline,
-)
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          BitsAndBytesConfig, pipeline)
 
 from taitriscore.basebot.base_gpt_api import BaseGPTAPI
 from taitriscore.config import CONFIG, Singleton
 from taitriscore.logs import logger
-from taitriscore.utils.token_counter import (
-    TOKEN_COSTS,
-    count_message_tokens,
-    count_string_tokens,
-)
+from taitriscore.utils.token_counter import (TOKEN_COSTS, count_message_tokens,
+                                             count_string_tokens)
 
 
-class RateLimiter:
+class RequestRateLimiter:
     def __init__(self, rpm):
         self.last_call_time = 0
         self.interval = 1.1 * 60 / rpm
         self.rpm = rpm
 
     def split_batches(self, batch):
+        """
+        Splits a batch of requests into smaller batches according to the rate limit.
+
+        Args:
+            batch (list): The list of requests to be split into batches.
+
+        Returns:
+            list: A list of smaller batches of requests.
+        """
         return [batch[i : i + self.rpm] for i in range(0, len(batch), self.rpm)]
 
     async def wait_if_needed(self, num_requests):
@@ -54,7 +56,7 @@ class Costs(NamedTuple):
     total_budget: float
 
 
-class CostManager(metaclass=Singleton):
+class CostHandler(metaclass=Singleton):
     def __init__(self):
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
@@ -93,7 +95,7 @@ class CostManager(metaclass=Singleton):
         )
 
 
-class LLAMAV2API(BaseGPTAPI, RateLimiter):
+class LLAMAAPI(BaseGPTAPI, RequestRateLimiter):
     def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
             CONFIG.llama_model_name, use_auth_token=CONFIG.HUGGINGFACE_API_KEY
@@ -141,9 +143,9 @@ class LLAMAV2API(BaseGPTAPI, RateLimiter):
             no_repeat_ngram_size=2,
         )
         self.llm = HuggingFacePipeline(pipeline=self.pipe)
-        self._cost_manager = CostManager()
+        self._cost_manager = CostHandler()
         self.rpm = CONFIG.rpm
-        RateLimiter.__init__(self, rpm=self.rpm)
+        RequestRateLimiter.__init__(self, rpm=self.rpm)
         super().__init__()
 
     def _calc_usage(self, messages, rsp):

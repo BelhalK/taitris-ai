@@ -1,5 +1,3 @@
-import pdb
-
 from taitriscore.actions import Action
 from taitriscore.config import CONFIG
 from taitriscore.logs import logger

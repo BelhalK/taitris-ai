@@ -17,8 +17,8 @@ def get_project_root():
 
 
 try:
-    ENV_ROOT = get_project_root() 
-    PROJECT_ROOT = get_project_root() / 'src'
+    ENV_ROOT = get_project_root()
+    PROJECT_ROOT = get_project_root() / "src"
     DATA_PATH = PROJECT_ROOT / "data"
     WORKSPACE_ROOT = PROJECT_ROOT / "workspace"
     PROMPT_PATH = PROJECT_ROOT / "taitriscore/prompts"
@@ -26,7 +26,9 @@ try:
     RESEARCH_PATH = DATA_PATH / "research"
 except:
     ENV_ROOT = Path("/Users/belhalkarimi/Desktop/Belhal/Tech/taitris/taitris-ai")
-    PROJECT_ROOT = Path("/Users/belhalkarimi/Desktop/Belhal/Tech/taitris/taitris-ai/src")
+    PROJECT_ROOT = Path(
+        "/Users/belhalkarimi/Desktop/Belhal/Tech/taitris/taitris-ai/src"
+    )
     DATA_PATH = PROJECT_ROOT / "data"
     WORKSPACE_ROOT = PROJECT_ROOT / "workspace"
     PROMPT_PATH = PROJECT_ROOT / "taitriscore/prompts"

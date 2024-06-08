@@ -1,5 +1,10 @@
+import os
+import sys
+
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(root_dir)
+
 import asyncio
-import pdb
 
 import fire
 
@@ -9,9 +14,7 @@ from taitriscore.roles import Planner
 
 
 async def create_plan(objective: str):
-
     role = Planner(profile="Planner", objective=objective)
-
     final_list = await role.generate_tasks_list(objective)
     logger.info(final_list)
 
@@ -23,8 +26,3 @@ def main(objective):
 
 if __name__ == "__main__":
     fire.Fire(main)
-
-
-# OBJECTIVE = """You are hired to lead an influencers marketing campaign for Taitris, a company selling innovative candles smelling like wood.
-#     You have access to instagram.
-#     Find the right influencers, reach out and try to do product seeding to bring some new clients to Taitris."""
