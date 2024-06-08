@@ -21,7 +21,7 @@ class ActionOutput:
                 raise ValueError(f"Unrecognized block: {info.field_name}")
             return v
 
-        @model_validator(mode='before')
+        @model_validator(mode="before")
         def check_missing_fields(cls, values):
             required_fields = set(mapping.keys())
             missing_fields = required_fields - set(values.keys())

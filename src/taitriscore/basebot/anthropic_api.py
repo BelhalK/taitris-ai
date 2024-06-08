@@ -11,11 +11,8 @@ from anthropic.types import Message, Usage
 from taitriscore.basebot.base_gpt_api import BaseGPTAPI
 from taitriscore.config import CONFIG, Singleton
 from taitriscore.logs import logger
-from taitriscore.utils.token_counter import (
-    TOKEN_COSTS,
-    count_message_tokens,
-    count_string_tokens,
-)
+from taitriscore.utils.token_counter import (TOKEN_COSTS, count_message_tokens,
+                                             count_string_tokens)
 
 
 def retry(max_retries):

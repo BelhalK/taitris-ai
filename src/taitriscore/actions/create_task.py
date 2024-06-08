@@ -17,6 +17,7 @@ Depending on what is asked of you, you will either:
 All of this is to complete the objective and design the perfect list of tasks to launch this influencer marketing campaign.
 """
 
+
 class CreateTaskList(Action):
     """Action class to generate a list of tasks for a marketing campaign."""
 
