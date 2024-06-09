@@ -1,10 +1,3 @@
-import abc
-import asyncio
-import pdb
-import time
-from functools import wraps
-from typing import NamedTuple
-
 import torch
 import transformers
 from langchain.llms import HuggingFacePipeline
@@ -13,86 +6,11 @@ from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           BitsAndBytesConfig, pipeline)
 
 from taitriscore.basebot.base_gpt_api import BaseGPTAPI
-from taitriscore.config import CONFIG, Singleton
-from taitriscore.logs import logger
+from taitriscore.basebot.basebot_utils import (CostHandler, Costs,
+                                               RequestRateLimiter, retry)
+from taitriscore.config import CONFIG
 from taitriscore.utils.token_counter import (TOKEN_COSTS, count_message_tokens,
                                              count_string_tokens)
-
-
-class RequestRateLimiter:
-    def __init__(self, rpm):
-        self.last_call_time = 0
-        self.interval = 1.1 * 60 / rpm
-        self.rpm = rpm
-
-    def split_batches(self, batch):
-        """
-        Splits a batch of requests into smaller batches according to the rate limit.
-
-        Args:
-            batch (list): The list of requests to be split into batches.
-
-        Returns:
-            list: A list of smaller batches of requests.
-        """
-        return [batch[i : i + self.rpm] for i in range(0, len(batch), self.rpm)]
-
-    async def wait_if_needed(self, num_requests):
-        current_time = time.time()
-        elapsed_time = current_time - self.last_call_time
-
-        if elapsed_time < self.interval * num_requests:
-            remaining_time = self.interval * num_requests - elapsed_time
-            logger.info(f"sleep {remaining_time}")
-            await asyncio.sleep(remaining_time)
-
-        self.last_call_time = time.time()
-
-
-class Costs(NamedTuple):
-    total_prompt_tokens: int
-    total_completion_tokens: int
-    total_cost: float
-    total_budget: float
-
-
-class CostHandler(metaclass=Singleton):
-    def __init__(self):
-        self.total_prompt_tokens = 0
-        self.total_completion_tokens = 0
-        self.total_cost = 0
-        self.total_budget = 0
-
-    def update_cost(self, prompt_tokens, completion_tokens, model):
-        self.total_prompt_tokens += prompt_tokens
-        self.total_completion_tokens += completion_tokens
-        cost = (
-            prompt_tokens * TOKEN_COSTS[model]["prompt"]
-            + completion_tokens * TOKEN_COSTS[model]["completion"]
-        ) / 1000
-        self.total_cost += cost
-        logger.info(
-            f"Total running cost: ${self.total_cost:.3f} | Max budget: ${CONFIG.max_budget:.3f} | "
-            f"Current cost: ${cost:.3f}, {prompt_tokens}, {completion_tokens}"
-        )
-        CONFIG.total_cost = self.total_cost
-
-    def get_total_prompt_tokens(self):
-        return self.total_prompt_tokens
-
-    def get_total_completion_tokens(self):
-        return self.total_completion_tokens
-
-    def get_total_cost(self):
-        return self.total_cost
-
-    def get_costs(self) -> Costs:
-        return Costs(
-            self.total_prompt_tokens,
-            self.total_completion_tokens,
-            self.total_cost,
-            self.total_budget,
-        )
 
 
 class LLAMAAPI(BaseGPTAPI, RequestRateLimiter):
@@ -174,7 +92,6 @@ class LLAMAAPI(BaseGPTAPI, RequestRateLimiter):
             messages = self._system_msgs(system_msgs) + [self._user_msg(prompt)]
         else:
             messages = [self._default_system_msg(), self._user_msg(prompt)]
-        pdb.set_trace()
         # res = self.llm(prompt=messages)
         res = self.llm(prompt=prompt)
         usage = self._calc_usage(prompt, res)

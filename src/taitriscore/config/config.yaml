@@ -1,3 +1,4 @@
+###### API KEYS ######
 OPENAI_API_KEY: ${OPENAI_API_KEY}
 ANTHROPIC_API_KEY : ${ANTHROPIC_API_KEY}
 
@@ -7,9 +8,11 @@ SERPER_API_KEY: ${SERPER_API_KEY}
 HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
 
 
+###### Patform ######
 PLATFORM: "OPENAI" #"LLAMA", "ANTHROPIC"
 
 
+###### Model names ######
 #LLAMA_MODEL_NAME: "TinyPixel/Llama-2-7B-bf16-sharded"
 # LLAMA_MODEL_NAME: "meta-llama/Llama-3-8b-chat-hf" 
 LLAMA_MODEL_NAME: "meta-llama/Llama-2-7b-chat-hf" 
@@ -21,17 +24,17 @@ OPENAI_MODEL: "gpt-3.5-turbo"
 ANTHROPIC_API_BASE: "https://api.anthropic.com"
 ANTHROPIC_MODEL: "claude-3-opus-20240229"
 
+###### Configs inference ######
 MAX_TOKENS: 100
 RPM: 10
 UPDATE_COSTS: True
 CALC_USAGE: True
 
-### for Research
+###### for Research ######
 MODEL_FOR_RESEARCHER_SUMMARY: "gpt-3.5-turbo"
 MODEL_FOR_RESEARCHER_REPORT: "gpt-3.5-turbo-16k"
 
-### for emailing
-
+###### for emailing ######
 GMAIL_ADDRESS: "@gmail.com"
 GMAIL_PASSWORD: ${GMAIL_PASSWORD}
 RECEIVER_EMAIL: "@gmail.com"

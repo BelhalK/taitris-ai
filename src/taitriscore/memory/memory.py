@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Iterable, Type
+from typing import Type
 
 from taitriscore.actions import Action
 from taitriscore.utils.schema import Message
