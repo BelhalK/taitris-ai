@@ -14,6 +14,7 @@ class SearchEngine:
         self.run_func = run_func
         self.engine = engine or self.config.search_engine
 
+    # Asynchronous function to run a search query
     async def run(self, query: str, max_results=8):
         if self.engine == SearchEngineType.SERPAPI_GOOGLE:
             search = SerpAPIWrapper(serpapi_api_key=self.config.serpapi_api_key)
@@ -24,4 +25,5 @@ class SearchEngine:
 
 
 if __name__ == "__main__":
+    # Example usage of the SearchEngine class
     SearchEngine.run(query="some query")

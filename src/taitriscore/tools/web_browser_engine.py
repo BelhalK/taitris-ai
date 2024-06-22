@@ -36,6 +36,7 @@ class WebBrowserEngine:
     @overload
     async def run(self, url: str, *urls: str) -> list[WebPage]: ...
 
+    # Asynchronous function to run a web browser engine
     async def run(self, url: str, *urls: str) -> WebPage | list[WebPage]:
         return await self.run_func(url, *urls)
 
@@ -43,6 +44,7 @@ class WebBrowserEngine:
 if __name__ == "__main__":
     import fire
 
+    # Main function to execute WebBrowserEngine with fire CLI
     async def main(
         url: str,
         *urls: str,
