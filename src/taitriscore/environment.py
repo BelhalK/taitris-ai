@@ -1,41 +1,36 @@
 import asyncio
 import pdb
-from typing import Iterable
+from typing import List
 
 from pydantic import BaseModel, Field
 
 from taitriscore.memory import Memory
 from taitriscore.roles import Role
 from taitriscore.utils.schema import Message
+from taitriscore.logs import logger
 
 
 class Environment(BaseModel):
-    roles: dict = Field(default_factory=dict)
+    roles: List[Role] = Field(default_factory=list)
     memory: Memory = Field(default_factory=Memory)
-    history: str = Field(default="")
+    history: List = Field(default_factory=list)
 
     class Config:
         arbitrary_types_allowed = True
 
-    def add_role(self, role):
-        role.set_env(self)
-        self.roles[role.profile] = role
-
     def add_roles(self, roles):
-        for role in roles:
-            self.add_role(role)
+        self.roles.extend(roles)
 
-    def publish_message(self, message):
-        self.memory.add(message)
-        self.history += f"\n{message}"
-
-    async def run(self, k=1):
-        for _ in range(k):
-            futures = []
-            for role in self.roles.values():
-                future = role.run()
-                futures.append(future)
-            await asyncio.gather(*futures)
+    async def run(self):
+        for role in self.roles:
+            todo = await role.run(self.memory)
+            self.history.append(todo)
+            if todo and "result" in todo:
+                if isinstance(todo["result"], dict) and "choices" in todo["result"]:
+                    content = todo["result"]["choices"][0]["message"]["content"]
+                    logger.info(f"{role.__class__.__name__} response: {content}")
+                else:
+                    logger.info(f"{role.__class__.__name__} response: {todo['result']}")
 
     def get_roles(self):
         return self.roles
