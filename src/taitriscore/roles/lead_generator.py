@@ -19,10 +19,16 @@ class LeadGenerator(Role):
         self._set_store(store)
 
     def _set_store(self, store):
+        prompt = f"Find influencers for {self._setting.goal}"
         if store:
             action = SearchAndSummarize(
-                "", engine=SearchEngineType.SERPAPI_GOOGLE, search_func=store.search
+                prompt,
+                engine=SearchEngineType.SERPAPI_GOOGLE,
+                search_func=store.search
             )
         else:
-            action = SearchAndSummarize("", engine=SearchEngineType.SERPAPI_GOOGLE)
+            action = SearchAndSummarize(
+                prompt,
+                engine=SearchEngineType.SERPAPI_GOOGLE
+            )
         self._init_actions([action])

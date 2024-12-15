@@ -21,16 +21,27 @@ class Environment(BaseModel):
     def add_roles(self, roles):
         self.roles.extend(roles)
 
+    def publish_message(self, message: Message):
+        """Add a message to the environment's memory"""
+        self.memory.add(message)
+        self.history.append(message)
+
     async def run(self):
         for role in self.roles:
             todo = await role.run(self.memory)
             self.history.append(todo)
-            if todo and "result" in todo:
-                if isinstance(todo["result"], dict) and "choices" in todo["result"]:
-                    content = todo["result"]["choices"][0]["message"]["content"]
+            if todo and hasattr(todo, 'content'):
+                if isinstance(todo.content, dict) and 'choices' in todo.content:
+                    # Extract just the message content from OpenAI response
+                    content = todo.content['choices'][0]['message']['content']
                     logger.info(f"{role.__class__.__name__} response: {content}")
                 else:
-                    logger.info(f"{role.__class__.__name__} response: {todo['result']}")
+                    # For lead generator, only show the findings once
+                    if isinstance(todo.content, str):
+                        if '🔍 Lead Generator Findings:' in todo.content:
+                            # Only show the findings, skip the response
+                            continue
+                        logger.info(f"{role.__class__.__name__} response: {todo.content}")
 
     def get_roles(self):
         return self.roles
