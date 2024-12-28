@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { Container, Grid, TextField, Typography, InputAdornment, IconButton, Card } from '@mui/material';
-
 import Layout from './components/Layout';
 import { theme } from './components/theme';
 
+import React, { useState } from 'react';
+import { Button, Card, Container, Grid, TextField, Typography, ThemeProvider, IconButton, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import axios from 'axios';
 import './App.css';
@@ -31,15 +29,21 @@ function App() {
     }
   };
 
+  const handleReset = () => {
+    setObjective('');
+    setResult('');
+    setShowResults(false);
+  };
+
   return (
     <Layout>
       <ThemeProvider theme={theme}>
         <Container maxWidth="lg" sx={{ padding: '4% 0', textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 6, color: theme.palette.text.secondary }}>
-      <span style={{ fontFamily: 'Pacifico, cursive' }}>Taitris</span> - Influencer Marketing Automation
-    </Typography>
-    </Container>
-    <Container maxWidth="lg" sx={{ padding: '0% 0', textAlign: 'left' }}>
+          <Typography variant="h4" gutterBottom sx={{ mb: 6, color: theme.palette.text.secondary }}>
+            <span style={{ fontFamily: 'Pacifico, cursive' }}>Taitris</span> - Influencer Marketing Automation
+          </Typography>
+        </Container>
+        <Container maxWidth="lg" sx={{ padding: '0% 0', textAlign: 'left' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={showResults ? 4 : 12}>
               <Card variant="outlined" sx={{ p: 2, mx: 'auto', mb: 3, backgroundColor: theme.palette.background.paper, color: theme.palette.text.primary }}>
@@ -55,24 +59,36 @@ function App() {
                   autoComplete="off"
                   InputProps={{
                     endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleRunScript} edge="end">
-                          <SendIcon />
-                        </IconButton>
-                      </InputAdornment>
+                      <IconButton onClick={handleRunScript}>
+                        <SendIcon />
+                      </IconButton>
                     ),
                   }}
-                  sx={{ input: { color: theme.palette.text.primary } }}
                 />
               </Card>
             </Grid>
             {showResults && (
               <Grid item xs={12} md={8}>
-                <Card sx={{ p: 2, backgroundColor: theme.palette.background.paper, color: theme.palette.text.primary }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Results:
-                  </Typography>
-                  <pre>{result}</pre>
+                <Card variant="outlined" sx={{ p: 2, mx: 'auto', mb: 3, backgroundColor: theme.palette.background.paper, color: theme.palette.text.primary, position: 'relative' }}>
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{result}</Typography>
+                  {showResults && (
+                    <Fab
+                      onClick={handleReset}
+                      sx={{
+                        position: 'absolute',
+                        bottom: 16,
+                        right: 16,
+                        backgroundColor: theme.palette.background.paper,
+                        color: 'white',
+                        border: '2px solid white',
+                        '&:hover': {
+                          backgroundColor: theme.palette.background.paper,
+                        },
+                      }}
+                    >
+                      Reset
+                    </Fab>
+                  )}
                 </Card>
               </Grid>
             )}
